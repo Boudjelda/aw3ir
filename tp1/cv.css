@@ -1,0 +1,46 @@
+
+table {
+    border-collapse: collapse;
+    width: 50%;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+tr:hover {
+    background-color: #f0f8ff;
+    transform: scale(1.02); /* léger zoom à l'hover */
+}
+
+
+th, td {
+   
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+tr:hover {
+    background-color: #f0f8ff;
+    transform: scale(1.02); /* léger zoom à l'hover */
+}
+
+
+  table.cv-table {
+      width: 100%;
+      
+      margin-bottom: 18px;
+    }
+
+  h1 {
+      text-align: center;
+     
+    }
+
+
+   h2 img {
+      height: 90px;
+      vertical-align: middle;
+    }
