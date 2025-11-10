@@ -1,8 +1,8 @@
-// Module de géolocalisation AVEC GÉOCODAGE
+
 const gpsModule = (function() {
     let currentPosition = null;
 
-    // Fonction pour obtenir la position actuelle
+
     function getCurrentPosition() {
         return new Promise((resolve, reject) => {
             if (!navigator.geolocation) {
@@ -44,7 +44,7 @@ const gpsModule = (function() {
         });
     }
 
-    // NOUVELLE FONCTION : Géocodage d'une adresse texte
+
     function geocodeAddress(address) {
         return new Promise((resolve, reject) => {
             const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
@@ -67,13 +67,13 @@ const gpsModule = (function() {
         });
     }
 
-    // NOUVELLE FONCTION : Détecter si c'est des coordonnées GPS
+
     function isGPSCoordinates(input) {
         const gpsPattern = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
         return gpsPattern.test(input.trim());
     }
 
-    // NOUVELLE FONCTION : Parser les coordonnées
+
     function parseCoordinates(input) {
         const cleanInput = input.replace(/\s/g, '');
         const parts = cleanInput.split(',');
@@ -89,7 +89,7 @@ const gpsModule = (function() {
         return null;
     }
 
-    // Fonction pour simuler des coordonnées GPS
+
     function simulatePosition(latitude, longitude) {
         currentPosition = {
             latitude: latitude,
@@ -98,17 +98,16 @@ const gpsModule = (function() {
         return currentPosition;
     }
 
-    // Fonction pour obtenir la dernière position connue
     function getLastKnownPosition() {
         return currentPosition;
     }
 
-    // Fonction pour formater les coordonnées en adresse
+
     function coordinatesToAddress(lat, lon) {
         return `${lat.toFixed(7)}, ${lon.toFixed(7)}`;
     }
 
-    // NOUVELLE FONCTION : Traitement intelligent de l'adresse
+
     function processAddress(input) {
         return new Promise((resolve, reject) => {
             const trimmedInput = input.trim();
@@ -127,7 +126,7 @@ const gpsModule = (function() {
                 }
             }
             
-            // 2. Si c'est une adresse texte (géocodage)
+            // géocodage
             if (trimmedInput.length > 0) {
                 geocodeAddress(trimmedInput)
                     .then(result => {
@@ -143,24 +142,24 @@ const gpsModule = (function() {
                 return;
             }
             
-            // 3. Si champ vide, erreur
+            
             reject(new Error("Veuillez saisir une adresse ou des coordonnées GPS"));
         });
     }
 
     return {
         getCurrentPosition,
-        geocodeAddress,      // NOUVEAU
-        isGPSCoordinates,    // NOUVEAU
-        parseCoordinates,    // NOUVEAU
-        processAddress,      // NOUVEAU
+        geocodeAddress,      
+        isGPSCoordinates,    
+        parseCoordinates,    
+        processAddress,      
         simulatePosition,
         getLastKnownPosition,
         coordinatesToAddress
     };
 })();
 
-// Initialisation de la géolocalisation
+
 document.addEventListener('DOMContentLoaded', function() {
     const geolocateBtn = document.getElementById('geolocateBtn');
     const addressInput = document.getElementById('address');
@@ -169,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
         geolocateBtn.addEventListener('click', function() {
             const currentAddress = addressInput.value.trim();
             
-            // STRATÉGIE INTELLIGENTE :
+        
             if (currentAddress === '') {
                 // 1. Si champ vide → géolocalisation navigateur
                 gpsModule.getCurrentPosition()
@@ -188,10 +187,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         alert("Erreur de géolocalisation: " + error.message);
                     });
             } else {
-                // 2. Si texte saisi → traitement intelligent
+        
                 gpsModule.processAddress(currentAddress)
                     .then(result => {
-                        // Mettre à jour le champ avec les coordonnées formatées
+                        
                         addressInput.value = result.display;
                         
                         updateAddressCount();
@@ -213,12 +212,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // NOUVEAU : Détection automatique quand on quitte le champ
+
     if (addressInput) {
         addressInput.addEventListener('blur', function() {
             const value = this.value.trim();
             if (value && gpsModule.isGPSCoordinates(value)) {
-                // Afficher un indicateur visuel
+                
                 showCoordinatesIndicator();
             }
         });
@@ -227,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("✅ Module GPS avec géocodage initialisé");
 });
 
-// FONCTIONS UTILITAIRES
+
 function updateAddressCount() {
     const addressInput = document.getElementById('address');
     const addressCount = document.getElementById('addressCount');
@@ -243,7 +242,7 @@ function updateMap(latitude, longitude) {
 }
 
 function showNotification(message) {
-    // Créer une notification temporaire
+    
     const notification = document.createElement('div');
     notification.style.cssText = `
         position: fixed;
