@@ -1,39 +1,286 @@
-<!doctype html>
-<html>
-
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>TP4</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <!-- Place favicon.ico in the root directory -->
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TP AW #4 - Formulaire avec géolocalisation</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background-color: #e9ebee;
-            font-family: system, -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
-            font-size: 16px;
-            margin: 0 auto;
-            max-width: 800px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            padding: 20px 0;
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .form-title {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            padding: 0.75rem 1rem;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        .input-group-text {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+        }
+        .error-message {
+            display: none;
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .is-invalid ~ .error-message {
+            display: block;
+        }
+        .char-count {
+            font-size: 0.75rem;
+            color: #6c757d;
+            text-align: right;
+            margin-top: 0.25rem;
+        }
+        .contacts-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+        .contacts-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .map-container {
+            height: 200px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 15px;
+            border: 1px solid #dee2e6;
+        }
+        .geolocate-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 0 10px 10px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            padding: 0 15px;
+        }
+        .geolocate-btn:hover {
+            background: #218838;
+        }
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
         }
     </style>
-
-    <!-- Code à dé-commenter si besoin de fichier CSS ou JS -->
-    <!--<link rel="stylesheet" href="style.css">-->
-    <!--<script src="main.js"></script>-->
 </head>
+<body class="d-flex align-items-center py-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="form-container p-4 p-md-5">
+                  
+                    <div class="text-center mb-5">
+                        <h1 class="form-title display-5 fw-bold mb-3">Ajouter un contact</h1>
+                        <p class="text-muted">Veuillez remplir tous les champs obligatoires</p>
+                    </div>
 
-<body>
-    <nav>
-        <a href="..">🏠 Index</a> / TP4
-    </nav>
-    <h1>TP4</h1>
-    <!-- Add your site or application content here -->
-    <p>Hello world! This is HTML5 Boilerplate.</p>
-    <img src="../galilee.png" alt="Logo Galilee" />
+                    <div class="success-message" id="successMessage">Contact ajouté avec succès !</div>
+
+                    <form id="userForm" class="needs-validation" novalidate>
+                        <!-- Nom et Prénom -->
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="lastname" class="form-label fw-semibold required-field">Nom</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="lastname" required 
+                                           placeholder="Votre nom" maxlength="50">
+                                </div>
+                                <div class="char-count" id="lastnameCount">0 car.</div>
+                                <div class="error-message" id="lastname-error">
+                                    Le nom doit contenir au moins 5 caractères.
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="firstname" class="form-label fw-semibold required-field">Prénom</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-signature"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="firstname" required 
+                                           placeholder="Votre prénom" maxlength="50">
+                                </div>
+                                <div class="char-count" id="firstnameCount">0 car.</div>
+                                <div class="error-message" id="firstname-error">
+                                    Le prénom doit contenir au moins 5 caractères.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Date de naissance -->
+                        <div class="mb-4">
+                            <label for="birthday" class="form-label fw-semibold required-field">Date de naissance</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
+                                <input type="date" class="form-control" id="birthday" required>
+                            </div>
+                            <div class="form-text text-muted">Format : AAAA-MM-JJ</div>
+                            <div class="error-message" id="birthday-error">
+                                La date de naissance ne peut pas être dans le futur.
+                            </div>
+                        </div>
+                        
+                        <!-- Adresse postale avec géolocalisation -->
+                        <div class="mb-4">
+                            <label for="address" class="form-label fw-semibold required-field">Adresse postale</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-home"></i>
+                                </span>
+                                <input type="text" class="form-control" id="address" required 
+                                       placeholder="Votre adresse complète" maxlength="100">
+                                <button type="button" class="geolocate-btn" id="geolocateBtn" title="Utiliser ma position actuelle">
+                                    <i class="fas fa-location-arrow"></i>
+                                </button>
+                            </div>
+                            <div class="char-count" id="addressCount">0 car.</div>
+                            <div class="error-message" id="address-error">
+                                L'adresse doit contenir au moins 5 caractères.
+                            </div>
+                            
+                            <!-- Carte OpenStreetMap -->
+                            <div class="map-container">
+                                <iframe id="mapFrame" width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
+                                    src="https://www.openstreetmap.org/export/embed.html?bbox=-0.5590820312500001%2C44.79576141775266%2C7.3828125%2C49.15296965617042&layer=mapnik&marker=46.9743,3.4195">
+                                </iframe>
+                            </div>
+                        </div>
+                        
+                        <!-- Adresse email -->
+                        <div class="mb-4">
+                            <label for="email" class="form-label fw-semibold required-field">Adresse email</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email" class="form-control" id="email" required 
+                                       placeholder="votre@email.com">
+                            </div>
+                            <div class="error-message" id="email-error">
+                                Veuillez saisir une adresse email valide.
+                            </div>
+                        </div>
+                        
+                        <!-- Boutons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5">
+                            <button type="reset" class="btn btn-outline-secondary me-md-2 px-4">
+                                <i class="fas fa-redo me-2"></i>Réinitialiser
+                            </button>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-paper-plane me-2"></i>Ajouter
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Liste des contacts -->
+                    <div class="contacts-table mt-5">
+                        <h3 class="p-3 mb-0 border-bottom">Liste des contacts (<span id="contactsCount">0</span>)</h3>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Prénom</th>
+                                        <th>Date de naissance</th>
+                                        <th>Adresse</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contactsTableBody">
+                                    <!-- Les contacts seront ajoutés ici dynamiquement -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal d'erreur générale -->
+    <div class="modal fade" id="errorModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Erreur de validation
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="fas fa-times-circle text-danger" style="font-size: 3rem;"></i>
+                    </div>
+                    <h6 class="fw-bold">Veuillez vérifier les informations saisies</h6>
+                    <p class="text-muted mb-0">Certains champs ne sont pas correctement remplis.</p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Compris</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts JavaScript -->
+    <script src="js/bootstrap.bundle.js"></script>
+    <script src="js/gps.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/display.js"></script>
+    <script src="js/form-validation.js"></script>
 </body>
-
 </html>
