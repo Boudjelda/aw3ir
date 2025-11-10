@@ -1,8 +1,7 @@
-// Module de stockage des contacts
+
 const storeModule = (function() {
     let contacts = JSON.parse(localStorage.getItem('contacts')) || [];
     
-    //  save dans le localStorage
     function saveToLocalStorage() {
         localStorage.setItem('contacts', JSON.stringify(contacts));
     }
@@ -12,7 +11,7 @@ const storeModule = (function() {
         return [...contacts];
     }
 
-    // ajouter un contact
+
     function addContact(contact) {
         // Générer un ID unique
         const newId = contacts.length > 0 ? Math.max(...contacts.map(c => c.id)) + 1 : 1;
@@ -31,7 +30,7 @@ const storeModule = (function() {
         return contacts.length;
     }
 
-    // Fonction pour supprimer un contact
+    // supprimer un contact
     function deleteContact(id) {
         const initialLength = contacts.length;
         contacts = contacts.filter(contact => contact.id !== id);
@@ -39,14 +38,14 @@ const storeModule = (function() {
         return contacts.length !== initialLength;
     }
 
-    // Fonction pour vider tous les contacts
+    
     function clearContacts() {
         contacts = [];
         saveToLocalStorage();
         return 0;
     }
 
-    // Fonction pour obtenir un contact par son ID
+
     function getContactById(id) {
         return contacts.find(contact => contact.id === id);
     }

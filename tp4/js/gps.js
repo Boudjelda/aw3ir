@@ -1,8 +1,8 @@
-// Module de géolocalisation
+
 const gpsModule = (function() {
     let currentPosition = null;
 
-    // Fonction pour obtenir la position actuelle
+    // position actuelle
     function getCurrentPosition() {
         return new Promise((resolve, reject) => {
             if (!navigator.geolocation) {
@@ -44,7 +44,7 @@ const gpsModule = (function() {
         });
     }
 
-    // Fonction pour simuler des coordonnées GPS (pour le développement)
+    
     function simulatePosition(latitude, longitude) {
         currentPosition = {
             latitude: latitude,
@@ -53,12 +53,12 @@ const gpsModule = (function() {
         return currentPosition;
     }
 
-    // Fonction pour obtenir la dernière position connue
+
     function getLastKnownPosition() {
         return currentPosition;
     }
 
-    // Fonction pour formater les coordonnées en adresse
+    
     function coordinatesToAddress(lat, lon) {
         return `${lat.toFixed(7)}, ${lon.toFixed(7)}`;
     }
@@ -71,7 +71,7 @@ const gpsModule = (function() {
     };
 })();
 
-// Initialisation de la géolocalisation
+
 document.addEventListener('DOMContentLoaded', function() {
     const geolocateBtn = document.getElementById('geolocateBtn');
     const addressInput = document.getElementById('address');
@@ -80,11 +80,11 @@ document.addEventListener('DOMContentLoaded', function() {
         geolocateBtn.addEventListener('click', function() {
             gpsModule.getCurrentPosition()
                 .then(position => {
-                    // Mettre à jour le champ d'adresse avec les coordonnées
+                    
                     const address = gpsModule.coordinatesToAddress(position.latitude, position.longitude);
                     addressInput.value = address;
                     
-                    // Mettre à jour le compteur de caractères
+                    
                     const addressCount = document.getElementById('addressCount');
                     if (addressCount) {
                         addressCount.textContent = `${address.length} car.`;
@@ -104,6 +104,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Simulation de coordonnées GPS pour le développement
+    
     console.log("Pour simuler une position GPS, utilisez: gpsModule.simulatePosition(48.8566, 2.3522)");
 });

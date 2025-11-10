@@ -1,12 +1,12 @@
-// Module de validation du formulaire
+
 const validationModule = (function() {
-    // Fonction de validation email
+    
     function validateEmail(email) {
         const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(String(email).toLowerCase());
     }
 
-    // Fonction pour afficher/masquer les messages d'erreur
+    
     function showError(field, show) {
         const errorElement = document.getElementById(field.id + '-error');
         if (errorElement) {
@@ -21,11 +21,10 @@ const validationModule = (function() {
         }
     }
 
-    // Validation d'un champ
+    
     function validateField(field) {
         const value = field.value.trim();
         
-        // Réinitialiser l'état
         field.classList.remove('is-invalid', 'is-valid');
         const errorElement = document.getElementById(field.id + '-error');
         if (errorElement) {
@@ -79,7 +78,7 @@ const validationModule = (function() {
         }
     }
 
-    // Validation du formulaire
+    
     function validateForm() {
         let isFormValid = true;
         const fields = document.querySelectorAll('#userForm input[required]');
@@ -91,7 +90,7 @@ const validationModule = (function() {
         return isFormValid;
     }
 
-    // Fonction pour vider tous les champs
+    
     function clearForm() {
         const fields = document.querySelectorAll('#userForm input');
         fields.forEach(field => {
@@ -103,7 +102,7 @@ const validationModule = (function() {
             }
         });
         
-        // Réinitialiser les compteurs de caractères
+        
         if (typeof displayModule !== 'undefined' && displayModule.initCharCounters) {
             displayModule.initCharCounters();
         }
@@ -116,32 +115,32 @@ const validationModule = (function() {
     };
 })();
 
-// Initialisation de l'application
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM ready!");
 
     const form = document.getElementById('userForm');
     const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
 
-    // Validation en temps réel
+
     form.addEventListener('input', function (e) {
         validationModule.validateField(e.target);
     });
 
-    // Réinitialisation du formulaire
+    // Réinitialisation
     form.addEventListener('reset', function () {
         setTimeout(() => {
             validationModule.clearForm();
         }, 0);
     });
 
-    // Soumission du formulaire
+    
     form.addEventListener('submit', function (event) {
         event.preventDefault();
         console.log("Formulaire soumis !");
 
         if (validationModule.validateForm()) {
-            // Récupérer les données du formulaire
+            
             const formData = {
                 nom: document.getElementById('lastname').value,
                 prenom: document.getElementById('firstname').value,
